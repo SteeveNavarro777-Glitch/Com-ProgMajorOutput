@@ -6,11 +6,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 #define MAX_HH 1024
 #define MAX_NAME 100
 #define MAX_ZONE 50
 #define CSV_FILE "relief_data_array.csv"
+#define MAX_ACCOUNTS 15
+#define MAX_RESIDENTS 50                    // changeable, depending on the population
+#define MAX_LEN 100
+#define USER_LEN 24
 
 /* Parallel arrays for households */
 unsigned long long hh_id[MAX_HH];
@@ -30,6 +36,8 @@ unsigned long long global_counter = 0;
 unsigned long long next_id = 1000;
 
 /* ---------- Manual string utilities (no string.h) ---------- */
+
+void accountManager();
 
 /* Returns length of a null-terminated char array */
 int my_strlen(const char *s) {
@@ -545,6 +553,8 @@ int main(void) {
     printf("=== Offline Barangay Disaster Relief System (array version) ===\n");
     printf("Register households, prioritize by vulnerability, allocate relief offline.\n");
 
+    accountManager();
+
     while (1) {
         printf("\nMenu:\n");
         printf("1. Register household\n");
@@ -554,7 +564,8 @@ int main(void) {
         printf("5. Search / Update / Remove household by ID\n");
         printf("6. Save data\n");
         printf("7. Load data\n");
-        printf("8. Exit\n");
+        printf("8. Open File (list of data)\n");
+        printf("9. Exit\n");
         int choice = read_int_prompt("Choose an option: ");
 
         if      (choice == 1) register_household_ui();
@@ -582,7 +593,10 @@ int main(void) {
             next_id = 1000;
             load_data(CSV_FILE);
         }
-        else if (choice == 8) {
+        else if(choice == 8){
+            system("start relief_data_array.csv");
+        }
+        else if (choice == 9) {
             update_all_scores();
             save_data(CSV_FILE);
             printf("Exiting. Stay safe.\n");
@@ -591,4 +605,87 @@ int main(void) {
         else printf("Invalid option. Try again.\n");
     }
     return 0;
+}
+
+void accountManager() {
+    char usernames[MAX_ACCOUNTS][24] = {"admin"}; // Pre-set admin account
+    char passwords[MAX_ACCOUNTS][24] = {"1234"};
+    int totalAccounts = 1;
+    int loggedIn = 0;
+
+    while (!loggedIn) {
+        int mainChoice;
+        printf("\n<=====|| WELCOME TO OUR PROGRAM ||=====>\n");
+        printf("1. Login\n");
+        printf("2. Create an Account\n");
+        printf("Choice: ");
+        
+        scanf("%d", &mainChoice);
+
+        //  LOGIN 
+        if (mainChoice == 1) {
+            while (1) {
+                char u[24], p[24];
+                int sub;
+                printf("\n<--- LOGIN --->");
+                printf("\n1. Enter Credentials");
+                printf("\n2. Back");
+                printf("\nChoice: ");
+                scanf("%d", &sub);
+                
+                if (sub == 2) break; 
+
+                printf("Username: "); 
+                scanf("%s", u);
+                printf("Password: "); 
+                scanf("%s", p);
+
+                bool found = false;
+
+                for (int i = 0; i < totalAccounts; i++) {
+                    if (strcmp(usernames[i], u) == 0 && strcmp(passwords[i], p) == 0) {
+                        printf("\nWelcome, %s! Access Granted.\n", u);
+                        loggedIn = 1;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) break; 
+
+                else{
+                    printf("Account does not exist or wrong password!\n");
+                }
+            }
+            while(getchar() != '\n');
+        } 
+        
+        // CREATE ACCOUNT 
+        else if (mainChoice == 2) {
+            if (totalAccounts >= MAX_ACCOUNTS) {
+                printf("System Full! Cannot add more than %d accounts.\n", MAX_ACCOUNTS);
+                continue;
+            }
+
+            int sub;
+            printf("<---| Create Account |---->\n");
+            printf("[1] Proceed\n");
+            printf("[2] Back\n");
+            printf("Enter Choice: ");
+            scanf("%d", &sub);
+            if (sub == 2) continue;
+
+            printf("Enter New Username: ");
+            scanf("%s", usernames[totalAccounts]);
+            printf("Enter New Password: ");
+            scanf("%s", passwords[totalAccounts]);
+
+            totalAccounts++;
+            printf("Account successfully created!\n");
+        } 
+        
+        else if (mainChoice == 3) {
+            exit(0);
+        }
+    }
 }
