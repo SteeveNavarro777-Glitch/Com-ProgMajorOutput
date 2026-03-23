@@ -531,6 +531,103 @@ void search_update_ui(void) {
     }
 }
 
+/* ---------- Account Manager ---------- */
+
+void accountManager() {
+    char usernames[MAX_ACCOUNTS][24] = {"admin"}; // Pre-set admin account
+    char passwords[MAX_ACCOUNTS][24] = {"1234"};
+    int totalAccounts = 1;
+    int loggedIn = 0;
+
+    while (!loggedIn) {
+        int mainChoice;
+        printf("\n<=====|| WELCOME TO OUR PROGRAM ||=====>\n");
+        printf("1. Login\n");
+        printf("2. Create an Account\n");
+        printf("Choice: ");
+        
+        if (scanf("%d", &mainChoice) != 1) {
+            int c; while((c = getchar()) != '\n' && c != EOF);
+            printf("Invalid input. Please enter a number.\n");
+            continue;
+        }
+        int c; while((c = getchar()) != '\n' && c != EOF);
+
+        //  LOGIN 
+        if (mainChoice == 1) {
+            while (1) {
+                char u[24], p[24];
+                int sub;
+                printf("\n<--- LOGIN --->\n");
+                printf("1. Enter Credentials\n");
+                printf("2. Back\n");
+                printf("Choice: ");
+                
+                if (scanf("%d", &sub) != 1) {
+                    int c; while((c = getchar()) != '\n' && c != EOF);
+                    continue;
+                }
+                int c; while((c = getchar()) != '\n' && c != EOF);
+                
+                if (sub == 2) break; 
+
+                printf("Username: "); 
+                scanf("%s", u);
+                printf("Password: "); 
+                scanf("%s", p);
+
+                bool found = false;
+
+                for (int i = 0; i < totalAccounts; i++) {
+                    if (strcmp(usernames[i], u) == 0 && strcmp(passwords[i], p) == 0) {
+                        printf("\nWelcome, %s! Access Granted.\n", u);
+                        loggedIn = 1;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) break; 
+                else{
+                    printf("Account does not exist or wrong password!\n");
+                }
+            }
+        } 
+        
+        // CREATE ACCOUNT 
+        else if (mainChoice == 2) {
+            if (totalAccounts >= MAX_ACCOUNTS) {
+                printf("System Full! Cannot add more than %d accounts.\n", MAX_ACCOUNTS);
+                continue;
+            }
+
+            int sub;
+            printf("<---| Create Account |---->\n");
+            printf("[1] Proceed\n");
+            printf("[2] Back\n");
+            printf("Enter Choice: ");
+            if (scanf("%d", &sub) != 1) {
+                int c; while((c = getchar()) != '\n' && c != EOF);
+                continue;
+            }
+            int c; while((c = getchar()) != '\n' && c != EOF);
+            if (sub == 2) continue;
+
+            printf("Enter New Username: ");
+            scanf("%s", usernames[totalAccounts]);
+            printf("Enter New Password: ");
+            scanf("%s", passwords[totalAccounts]);
+
+            totalAccounts++;
+            printf("Account successfully created!\n");
+        } 
+        
+        else if (mainChoice == 3) {
+            exit(0);
+        }
+    }
+}
+
 /* ---------- Main ---------- */
 
 int main(void) {
@@ -605,87 +702,4 @@ int main(void) {
         else printf("Invalid option. Try again.\n");
     }
     return 0;
-}
-
-void accountManager() {
-    char usernames[MAX_ACCOUNTS][24] = {"admin"}; // Pre-set admin account
-    char passwords[MAX_ACCOUNTS][24] = {"1234"};
-    int totalAccounts = 1;
-    int loggedIn = 0;
-
-    while (!loggedIn) {
-        int mainChoice;
-        printf("\n<=====|| WELCOME TO OUR PROGRAM ||=====>\n");
-        printf("1. Login\n");
-        printf("2. Create an Account\n");
-        printf("Choice: ");
-        
-        scanf("%d", &mainChoice);
-
-        //  LOGIN 
-        if (mainChoice == 1) {
-            while (1) {
-                char u[24], p[24];
-                int sub;
-                printf("\n<--- LOGIN --->");
-                printf("\n1. Enter Credentials");
-                printf("\n2. Back");
-                printf("\nChoice: ");
-                scanf("%d", &sub);
-                
-                if (sub == 2) break; 
-
-                printf("Username: "); 
-                scanf("%s", u);
-                printf("Password: "); 
-                scanf("%s", p);
-
-                bool found = false;
-
-                for (int i = 0; i < totalAccounts; i++) {
-                    if (strcmp(usernames[i], u) == 0 && strcmp(passwords[i], p) == 0) {
-                        printf("\nWelcome, %s! Access Granted.\n", u);
-                        loggedIn = 1;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) break; 
-
-                else{
-                    printf("Account does not exist or wrong password!\n");
-                }
-            }
-            while(getchar() != '\n');
-        } 
-        
-        // CREATE ACCOUNT 
-        else if (mainChoice == 2) {
-            if (totalAccounts >= MAX_ACCOUNTS) {
-                printf("System Full! Cannot add more than %d accounts.\n", MAX_ACCOUNTS);
-                continue;
-            }
-
-            int sub;
-            printf("<---| Create Account |---->\n");
-            printf("[1] Proceed\n");
-            printf("[2] Back\n");
-            printf("Enter Choice: ");
-            scanf("%d", &sub);
-            if (sub == 2) continue;
-
-            printf("Enter New Username: ");
-            scanf("%s", usernames[totalAccounts]);
-            printf("Enter New Password: ");
-            scanf("%s", passwords[totalAccounts]);
-
-            totalAccounts++;
-            printf("Account successfully created!\n");
-        } 
-        
-        else if (mainChoice == 3) {
-            exit(0);
-        }
-    }
 }
