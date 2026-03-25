@@ -1,8 +1,4 @@
-/* barangay_relief_array.c
-   Recreation using only arrays, functions, loops, and conditionals.
-   No string.h — all string operations done manually with loops/arrays.
-   Compile: gcc -std=c99 -O2 -o barangay_relief_array barangay_relief_array.c
-*/
+/* barangay_relief_array.c */
 
 #include <stdio.h>
 #include <stdlib.h>
