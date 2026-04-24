@@ -6,7 +6,7 @@
 #define MAX_HH 1024
 #define MAX_NAME 100
 #define MAX_ZONE 50
-#define CSV_FILE "relief_data_array.csv"
+#define CSV_FILE "relief_data_array.txt"
 #define MAX_ACCOUNTS 15
 #define MAX_RESIDENTS 50                    // changeable, depending on the population
 #define MAX_LEN 100
@@ -37,7 +37,7 @@ void my_strncpy(char *dst, const char *src, int n);
 void my_strcpy(char *dst, const char *src);
 unsigned long long my_strtoull(const char *s);
 int my_atoi(const char *s);
-int csv_next_token(const char *buf, int *pos, char *out, int out_size);
+int next_token(const char *buf, int *pos, char *out, int out_size);
 void swap_all(int i, int j);
 double compute_vulnerability_index(int idx);
 int higher_priority_idx(int a, int b);
@@ -90,9 +90,7 @@ int main(void) {
         printf("3. Peek next household\n");
         printf("4. List households (by priority)\n");
         printf("5. Search / Update / Remove household by ID\n");
-        printf("6. Save data\n");
-        printf("7. Load data\n");
-        printf("8. Exit\n");
+        printf("6. Exit\n");
         printf("Choose an option: ");
         int choice;
         scanf("%d", &choice);
@@ -114,32 +112,9 @@ int main(void) {
         else if (choice == 5){
             search_update_ui();
         }
-        else if (choice == 6){
-            save_data(CSV_FILE);
-        }
-        else if (choice == 7) {
-            for (i = 0; i < MAX_HH; ++i) {
-                hh_id[i]       = 0;
-                hh_head[i][0]  = '\0';
-                hh_zone[i][0]  = '\0';
-                hh_members[i]  = 0;
-                hh_elderly[i]  = 0;
-                hh_infants[i]  = 0;
-                hh_disabled[i] = 0;
-                hh_pregnant[i] = 0;
-                hh_vuln[i]     = 0.0;
-                hh_served[i]   = 0;
-                hh_order[i]    = 0;
-            }
-            heap_size = 0;
-            global_counter = 0;
-            next_id = 1000;
-            load_data(CSV_FILE);
-        }
-        else if (choice == 8) {
+        else if (choice == 6) {
             update_all_scores();
             save_data(CSV_FILE);
-            system("start relief_data_array.csv");
             printf("Exiting. Stay safe.\n");
             return 0;
         }
@@ -210,10 +185,10 @@ int my_atoi(const char *s) {
  * Writes token into out (max out_size chars including null terminator).
  * Returns 1 if a token was found, 0 if end of string reached.
  */
-int csv_next_token(const char *buf, int *pos, char *out, int out_size) {
+int next_token(const char *buf, int *pos, char *out, int out_size) {
     if (buf[*pos] == '\0') return 0;
     int j = 0;
-    while (buf[*pos] != '\0' && buf[*pos] != ',') {
+    while (buf[*pos] != '\0' && buf[*pos] != '|') {
         if (j < out_size - 1) {
             out[j] = buf[*pos];
             j++;
@@ -221,7 +196,7 @@ int csv_next_token(const char *buf, int *pos, char *out, int out_size) {
         (*pos)++;
     }
     out[j] = '\0';
-    if (buf[*pos] == ',') (*pos)++;   /* skip delimiter */
+    if (buf[*pos] == '|') (*pos)++;
     return 1;
 }
 
@@ -316,25 +291,13 @@ void save_data(const char *filename) {
     FILE *f = fopen(filename, "w");
     if (!f) { printf("Failed to open file for saving.\n"); return; }
 
-    fprintf(f, "id,head_name,zone,members,elderly,infants,disabled,pregnant,served,order\n");
+    fprintf(f, "id|head_name|zone|members|elderly|infants|disabled|pregnant|served|order\n");
 
-    int i, k;
+    int i;
     for (i = 0; i < heap_size; ++i) {
-        /* Copy and sanitise head name: replace commas with semicolons */
-        char head_safe[MAX_NAME];
-        my_strncpy(head_safe, hh_head[i], MAX_NAME);
-        for (k = 0; head_safe[k] != '\0'; ++k)
-            if (head_safe[k] == ',') head_safe[k] = ';';
-
-        /* Copy and sanitise zone */
-        char zone_safe[MAX_ZONE];
-        my_strncpy(zone_safe, hh_zone[i], MAX_ZONE);
-        for (k = 0; zone_safe[k] != '\0'; ++k)
-            if (zone_safe[k] == ',') zone_safe[k] = ';';
-
-        fprintf(f, "%llu,%s,%s,%d,%d,%d,%d,%d,%d,%llu\n",
+        fprintf(f, "%llu|%s|%s|%d|%d|%d|%d|%d|%d|%llu\n",
                 (unsigned long long)hh_id[i],
-                head_safe, zone_safe,
+                hh_head[i], hh_zone[i],
                 hh_members[i], hh_elderly[i], hh_infants[i],
                 hh_disabled[i], hh_pregnant[i],
                 hh_served[i],
@@ -354,45 +317,39 @@ void load_data(const char *filename) {
 
     heap_size = 0;
     while (fgets(line, sizeof(line), f)) {
-        /* Convert line into zero-terminated buffer without trailing newline */
-        int len = 0;
-        while (line[len] != '\0') len++;
-        if (len > 0 && line[len - 1] == '\n') { line[len - 1] = '\0'; len--; }
+        /* Remove trailing newline */
+        int len = my_strlen(line);
+        if (len > 0 && line[len - 1] == '\n') line[len - 1] = '\0';
 
         char tok[MAX_NAME];
-        int pos = 0;   /* cursor into line[] */
+        int pos = 0;
 
         /* id */
-        if (!csv_next_token(line, &pos, tok, MAX_NAME)) continue;
+        if (!next_token(line, &pos, tok, MAX_NAME)) continue;
         hh_id[heap_size] = my_strtoull(tok);
 
         /* head name */
-        if (!csv_next_token(line, &pos, tok, MAX_NAME))
+        if (!next_token(line, &pos, tok, MAX_NAME))
             hh_head[heap_size][0] = '\0';
         else
             my_strncpy(hh_head[heap_size], tok, MAX_NAME);
 
         /* zone */
-        if (!csv_next_token(line, &pos, tok, MAX_ZONE))
+        if (!next_token(line, &pos, tok, MAX_ZONE))
             hh_zone[heap_size][0] = '\0';
         else
             my_strncpy(hh_zone[heap_size], tok, MAX_ZONE);
 
         /* members, elderly, infants, disabled, pregnant, served */
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_members[heap_size]  = my_atoi(tok); else hh_members[heap_size]  = 0;
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_elderly[heap_size]  = my_atoi(tok); else hh_elderly[heap_size]  = 0;
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_infants[heap_size]  = my_atoi(tok); else hh_infants[heap_size]  = 0;
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_disabled[heap_size] = my_atoi(tok); else hh_disabled[heap_size] = 0;
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_pregnant[heap_size] = my_atoi(tok); else hh_pregnant[heap_size] = 0;
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_served[heap_size]   = my_atoi(tok); else hh_served[heap_size]   = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_members[heap_size]  = my_atoi(tok); else hh_members[heap_size]  = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_elderly[heap_size]  = my_atoi(tok); else hh_elderly[heap_size]  = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_infants[heap_size]  = my_atoi(tok); else hh_infants[heap_size]  = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_disabled[heap_size] = my_atoi(tok); else hh_disabled[heap_size] = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_pregnant[heap_size] = my_atoi(tok); else hh_pregnant[heap_size] = 0;
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_served[heap_size]   = my_atoi(tok); else hh_served[heap_size]   = 0;
 
         /* order */
-        if (csv_next_token(line, &pos, tok, MAX_NAME)) hh_order[heap_size] = my_strtoull(tok); else hh_order[heap_size] = 0;
-
-        /* Trim any stray newline that ended up inside the last zone token */
-        int zlen = my_strlen(hh_zone[heap_size]);
-        if (zlen > 0 && hh_zone[heap_size][zlen - 1] == '\n')
-            hh_zone[heap_size][zlen - 1] = '\0';
+        if (next_token(line, &pos, tok, MAX_NAME)) hh_order[heap_size] = my_strtoull(tok); else hh_order[heap_size] = 0;
 
         hh_vuln[heap_size] = compute_vulnerability_index(heap_size);
 

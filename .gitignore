@@ -1,0 +1,22 @@
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+*.a
+*.so
+*.dll
+vc140.pdb
+
+# Data files
+relief_data_array.txt
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
