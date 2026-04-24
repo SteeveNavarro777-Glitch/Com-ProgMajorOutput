@@ -1,5 +1,3 @@
-/* barangay_relief_array.c */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -31,11 +29,131 @@ int heap_size = 0;
 unsigned long long global_counter = 0;
 unsigned long long next_id = 1000;
 
-/* ---------- Manual string utilities (no string.h) ---------- */
+// <=====|| FUNCTION PROTOTYPE ||=====>
 
 void accountManager();
+int my_strlen(const char *s);
+void my_strncpy(char *dst, const char *src, int n);
+void my_strcpy(char *dst, const char *src);
+unsigned long long my_strtoull(const char *s);
+int my_atoi(const char *s);
+int csv_next_token(const char *buf, int *pos, char *out, int out_size);
+void swap_all(int i, int j);
+double compute_vulnerability_index(int idx);
+int higher_priority_idx(int a, int b);
+void heapify_up(int idx);
+void heapify_down(int idx);
+void rebuild_heap(void);
+void save_data(const char *filename);
+void load_data(const char *filename);
+void read_line(char *buf, int size);
+int read_int_prompt(const char *prompt);
+void register_household_ui(void);
+void update_all_scores(void);
+unsigned long long heap_pop_top(void);
+void serve_next_ui(void);
+void peek_next_ui(void);
+void list_ui(void);
+int find_index_by_id(unsigned long long id);
+void search_update_ui(void);
+void accountManager();
 
-/* Returns length of a null-terminated char array */
+
+// <=====|| MAIN FUNCTION ||=====> 
+
+int main(void) {
+    int i;
+    for (i = 0; i < MAX_HH; ++i) {
+        hh_id[i]       = 0;
+        hh_head[i][0]  = '\0';
+        hh_zone[i][0]  = '\0';
+        hh_members[i]  = 0;
+        hh_elderly[i]  = 0;
+        hh_infants[i]  = 0;
+        hh_disabled[i] = 0;
+        hh_pregnant[i] = 0;
+        hh_vuln[i]     = 0.0;
+        hh_served[i]   = 0;
+        hh_order[i]    = 0;
+    }
+
+    load_data(CSV_FILE);
+    printf("=== Offline Barangay Disaster Relief System (array version) ===\n");
+    printf("Register households, prioritize by vulnerability, allocate relief offline.\n");
+
+    accountManager();
+
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1. Register household\n");
+        printf("2. Serve next household (allocate relief)\n");
+        printf("3. Peek next household\n");
+        printf("4. List households (by priority)\n");
+        printf("5. Search / Update / Remove household by ID\n");
+        printf("6. Save data\n");
+        printf("7. Load data\n");
+        printf("8. Exit\n");
+        printf("Choose an option: ");
+        int choice;
+        scanf("%d", &choice);
+        getchar();
+
+        if      (choice == 1){
+            register_household_ui();
+        } 
+        else if (choice == 2){
+            serve_next_ui();
+            getchar();
+        }
+        else if (choice == 3){
+            peek_next_ui();
+        }
+        else if (choice == 4){
+            list_ui();
+        }
+        else if (choice == 5){
+            search_update_ui();
+        }
+        else if (choice == 6){
+            save_data(CSV_FILE);
+        }
+        else if (choice == 7) {
+            for (i = 0; i < MAX_HH; ++i) {
+                hh_id[i]       = 0;
+                hh_head[i][0]  = '\0';
+                hh_zone[i][0]  = '\0';
+                hh_members[i]  = 0;
+                hh_elderly[i]  = 0;
+                hh_infants[i]  = 0;
+                hh_disabled[i] = 0;
+                hh_pregnant[i] = 0;
+                hh_vuln[i]     = 0.0;
+                hh_served[i]   = 0;
+                hh_order[i]    = 0;
+            }
+            heap_size = 0;
+            global_counter = 0;
+            next_id = 1000;
+            load_data(CSV_FILE);
+        }
+        else if (choice == 8) {
+            update_all_scores();
+            save_data(CSV_FILE);
+            system("start relief_data_array.csv");
+            printf("Exiting. Stay safe.\n");
+            return 0;
+        }
+        else{
+            printf("Invalid option. Try again.\n");
+        }
+    }
+    return 0;
+}
+
+
+// <=====|| FUNCTION DEFINITIONS ||=====>
+
+
 int my_strlen(const char *s) {
     int i = 0;
     while (s[i] != '\0') i++;
@@ -381,9 +499,12 @@ void serve_next_ui(void) {
         printf("Top household already served; removed from queue.\n");
         return;
     }
-    printf("Next to serve: ID %llu | Head: %s | Zone: %s | Vulnerability: %.2f\n",
-           (unsigned long long)hh_id[0], hh_head[0], hh_zone[0], hh_vuln[0]);
-    int confirm = read_int_prompt("Allocate relief pack to this household? (1=yes, 0=no): ");
+    printf("Next to serve: ID %llu | Head: %s | Zone: %s | Vulnerability: %.2f\n", (unsigned long long)hh_id[0], hh_head[0], hh_zone[0], hh_vuln[0]);
+    int confirm;
+    // = read_int_prompt("Allocate relief pack to this household? (1=yes, 0=no): ");
+    printf("Allocate relief pack to this household? (1=yes, 0=no): ");
+    scanf("%d", &confirm);
+
     if (confirm == 1) {
         hh_served[0] = 1;
         unsigned long long served_id = heap_pop_top();
@@ -530,172 +651,51 @@ void search_update_ui(void) {
 /* ---------- Account Manager ---------- */
 
 void accountManager() {
-    char usernames[MAX_ACCOUNTS][24] = {"admin"}; // Pre-set admin account
+    // Initialized properly (rest will be null/zero)
+    char usernames[MAX_ACCOUNTS][24] = {"admin"}; 
     char passwords[MAX_ACCOUNTS][24] = {"1234"};
     int totalAccounts = 1;
-    int loggedIn = 0;
+    bool loggedIn = false;
 
     while (!loggedIn) {
-        int mainChoice;
         printf("\n<=====|| WELCOME TO OUR PROGRAM ||=====>\n");
-        printf("1. Login\n");
-        printf("2. Create an Account\n");
-        printf("Choice: ");
-        
-        if (scanf("%d", &mainChoice) != 1) {
-            int c; while((c = getchar()) != '\n' && c != EOF);
-            printf("Invalid input. Please enter a number.\n");
-            continue;
-        }
-        int c; while((c = getchar()) != '\n' && c != EOF);
 
-        //  LOGIN 
-        if (mainChoice == 1) {
-            while (1) {
-                char u[24], p[24];
-                int sub;
-                printf("\n<--- LOGIN --->\n");
-                printf("1. Enter Credentials\n");
-                printf("2. Back\n");
-                printf("Choice: ");
-                
-                if (scanf("%d", &sub) != 1) {
-                    int c; while((c = getchar()) != '\n' && c != EOF);
-                    continue;
-                }
-                int c; while((c = getchar()) != '\n' && c != EOF);
-                
-                if (sub == 2) break; 
+        // LOGIN LOOP
+        while (1) {
+            char u[24], p[24];
+            printf("\n<--- LOGIN --->\n"); 
 
-                printf("Username: "); 
-                scanf("%s", u);
-                printf("Password: "); 
-                scanf("%s", p);
+            printf("Username: "); 
+            if (fgets(u, sizeof(u), stdin)) {
+                // REMOVE NEWLINE: Replace '\n' with null terminator '\0'
+                u[strcspn(u, "\n")] = 0;
+            }
+            
+            printf("Password: "); 
+            if (fgets(p, sizeof(p), stdin)) {
+                p[strcspn(p, "\n")] = 0;
+            }
 
-                bool found = false;
+            bool found = false;
 
-                for (int i = 0; i < totalAccounts; i++) {
-                    if (strcmp(usernames[i], u) == 0 && strcmp(passwords[i], p) == 0) {
-                        printf("\nWelcome, %s! Access Granted.\n", u);
-                        loggedIn = 1;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) break; 
-                else{
-                    printf("Account does not exist or wrong password!\n");
+            // CORRECT BOUNDS: i < totalAccounts (not <=)
+            for (int i = 0; i < totalAccounts; i++) {
+                if (strcmp(usernames[i], u) == 0 && strcmp(passwords[i], p) == 0) {
+                    printf("\nWelcome, %s! Access Granted.\n", u);
+                    loggedIn = true;
+                    found = true;
+                    break;
                 }
             }
-        } 
-        
-        // CREATE ACCOUNT 
-        else if (mainChoice == 2) {
-            if (totalAccounts >= MAX_ACCOUNTS) {
-                printf("System Full! Cannot add more than %d accounts.\n", MAX_ACCOUNTS);
-                continue;
+
+            if (found) {
+                break; // Exit the inner while(1)
+            } else {
+                printf("Error: Invalid credentials. Please try again.\n");
+                break;
             }
-
-            int sub;
-            printf("<---| Create Account |---->\n");
-            printf("[1] Proceed\n");
-            printf("[2] Back\n");
-            printf("Enter Choice: ");
-            if (scanf("%d", &sub) != 1) {
-                int c; while((c = getchar()) != '\n' && c != EOF);
-                continue;
-            }
-            int c; while((c = getchar()) != '\n' && c != EOF);
-            if (sub == 2) continue;
-
-            printf("Enter New Username: ");
-            scanf("%s", usernames[totalAccounts]);
-            printf("Enter New Password: ");
-            scanf("%s", passwords[totalAccounts]);
-
-            totalAccounts++;
-            printf("Account successfully created!\n");
-        } 
-        
-        else if (mainChoice == 3) {
-            exit(0);
         }
     }
-}
-
-/* ---------- Main ---------- */
-
-int main(void) {
-    int i;
-    for (i = 0; i < MAX_HH; ++i) {
-        hh_id[i]       = 0;
-        hh_head[i][0]  = '\0';
-        hh_zone[i][0]  = '\0';
-        hh_members[i]  = 0;
-        hh_elderly[i]  = 0;
-        hh_infants[i]  = 0;
-        hh_disabled[i] = 0;
-        hh_pregnant[i] = 0;
-        hh_vuln[i]     = 0.0;
-        hh_served[i]   = 0;
-        hh_order[i]    = 0;
-    }
-
-    load_data(CSV_FILE);
-    printf("=== Offline Barangay Disaster Relief System (array version) ===\n");
-    printf("Register households, prioritize by vulnerability, allocate relief offline.\n");
-
-    accountManager();
-
-    while (1) {
-        printf("\nMenu:\n");
-        printf("1. Register household\n");
-        printf("2. Serve next household (allocate relief)\n");
-        printf("3. Peek next household\n");
-        printf("4. List households (by priority)\n");
-        printf("5. Search / Update / Remove household by ID\n");
-        printf("6. Save data\n");
-        printf("7. Load data\n");
-        printf("8. Open File (list of data)\n");
-        printf("9. Exit\n");
-        int choice = read_int_prompt("Choose an option: ");
-
-        if      (choice == 1) register_household_ui();
-        else if (choice == 2) serve_next_ui();
-        else if (choice == 3) peek_next_ui();
-        else if (choice == 4) list_ui();
-        else if (choice == 5) search_update_ui();
-        else if (choice == 6) save_data(CSV_FILE);
-        else if (choice == 7) {
-            for (i = 0; i < MAX_HH; ++i) {
-                hh_id[i]       = 0;
-                hh_head[i][0]  = '\0';
-                hh_zone[i][0]  = '\0';
-                hh_members[i]  = 0;
-                hh_elderly[i]  = 0;
-                hh_infants[i]  = 0;
-                hh_disabled[i] = 0;
-                hh_pregnant[i] = 0;
-                hh_vuln[i]     = 0.0;
-                hh_served[i]   = 0;
-                hh_order[i]    = 0;
-            }
-            heap_size = 0;
-            global_counter = 0;
-            next_id = 1000;
-            load_data(CSV_FILE);
-        }
-        else if(choice == 8){
-            system("start relief_data_array.csv");
-        }
-        else if (choice == 9) {
-            update_all_scores();
-            save_data(CSV_FILE);
-            printf("Exiting. Stay safe.\n");
-            return 0;
-        }
-        else printf("Invalid option. Try again.\n");
-    }
-    return 0;
+    
+    printf("Entering main system...\n");
 }
