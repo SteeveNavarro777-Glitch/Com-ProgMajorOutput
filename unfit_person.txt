@@ -1,0 +1,12 @@
+Household ID: 1007 (Head: Batista)
+ - [Elderly] 1
+ - [Infant] Hellpo
+ - [Infant] asd
+ - [Pregnant] 
+-----------------------------------
+Household ID: 1007 (Head: Ibarra)
+ - [Elderly] Crisostomo Ibbara
+ - [Infant] Christopher Ibarra
+ - [Fit] Malcolm Ibarra
+ - [Fit] Jessa Ibarra
+-----------------------------------

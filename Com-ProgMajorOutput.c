@@ -29,7 +29,7 @@ int heap_size = 0;
 unsigned long long global_counter = 0;
 unsigned long long next_id = 1000;
 
-// <=====|| FUNCTION PROTOTYPE ||=====>
+// <=====|| FUNCTION PROTOTYPES ||=====>
 
 void accountManager();
 int my_strlen(const char *s);
@@ -89,7 +89,7 @@ int main(void) {
         printf("2. Serve next household (allocate relief)\n");
         printf("3. Peek next household\n");
         printf("4. List households (by priority)\n");
-        printf("5. Search / Update / Remove household by ID\n");
+        printf("5. Search / Update / Show More / Remove household by ID\n");
         printf("6. Exit\n");
         printf("Choose an option: ");
         int choice;
@@ -115,6 +115,7 @@ int main(void) {
         else if (choice == 6) {
             update_all_scores();
             save_data(CSV_FILE);
+            system("relief_data_array.txt");
             printf("Exiting. Stay safe.\n");
             return 0;
         }
@@ -291,17 +292,24 @@ void save_data(const char *filename) {
     FILE *f = fopen(filename, "w");
     if (!f) { printf("Failed to open file for saving.\n"); return; }
 
-    fprintf(f, "id|head_name|zone|members|elderly|infants|disabled|pregnant|served|order\n");
+    // Adjusted widths to fit ALL capitalized labels comfortably
+    // ID (6) | HEAD_NAME (20) | ZONE (6) | MEMBERS (10) | ELDERLY (10) | INFANTS (10) | DISABLED (10) | PREGNANT (10) | SERVED (8) | ORDER (8)
+    fprintf(f, "%-6s |           %-30s        |    %-11s                  | %-10s | %-10s | %-10s | %-10s | %-10s | %-8s | %-8s\n",
+            "ID", "HEAD_NAME", "ZONE", "MEMBERS", "ELDERLY", "INFANTS", "DISABLED", "PREGNANT", "SERVED", "ORDER");
 
-    int i;
-    for (i = 0; i < heap_size; ++i) {
-        fprintf(f, "%llu|%s|%s|%d|%d|%d|%d|%d|%d|%llu\n",
-                (unsigned long long)hh_id[i],
-                hh_head[i], hh_zone[i],
-                hh_members[i], hh_elderly[i], hh_infants[i],
-                hh_disabled[i], hh_pregnant[i],
+    for (int i = 0; i < heap_size; ++i) {
+        // These widths MUST match the header widths above exactly to stay aligned
+        fprintf(f, "%-6llu | %-20s | %-6s | %-10d | %-10d | %-10d | %-10d | %-10d | %-8d | %-8llu\n",
+                hh_id[i],
+                hh_head[i], 
+                hh_zone[i],
+                hh_members[i], 
+                hh_elderly[i], 
+                hh_infants[i],
+                hh_disabled[i], 
+                hh_pregnant[i],
                 hh_served[i],
-                (unsigned long long)hh_order[i]);
+                hh_order[i]);
     }
     fclose(f);
     printf("Data saved to %s\n", filename);
@@ -399,26 +407,82 @@ int read_int_prompt(const char *prompt) {
 
 void register_household_ui(void) {
     if (heap_size >= MAX_HH) { printf("Maximum households reached.\n"); return; }
+    
     int idx = heap_size;
     hh_id[idx] = ++next_id;
+    char tempName[MAX_NAME];
+
+    printf("\n--- REGISTERING HOUSEHOLD ID: %llu ---\n", hh_id[idx]);
     printf("Enter household head name: ");
     read_line(hh_head[idx], MAX_NAME);
     printf("Enter zone/purok: ");
     read_line(hh_zone[idx], MAX_ZONE);
-    hh_members[idx]  = read_int_prompt("Total household members: ");
-    hh_elderly[idx]  = read_int_prompt("Number of elderly (60+): ");
-    hh_infants[idx]  = read_int_prompt("Number of infants (<=2): ");
+    
+    hh_members[idx] = read_int_prompt("Total household members: ");
+
+    FILE *unfitF = fopen("unfit_person.txt", "a");
+    if (!unfitF) {
+        printf("Error: Could not open unfit_person.txt\n");
+        return;
+    }
+    fprintf(unfitF, "Household ID: %llu (Head: %s)\n", hh_id[idx], hh_head[idx]);
+
+    hh_elderly[idx] = read_int_prompt("Number of elderly (60+): ");
+    for (int i = 0; i < hh_elderly[idx]; i++) {
+        printf("  -> Name of Elderly #%d: ", i + 1);
+        read_line(tempName, MAX_NAME);
+        fprintf(unfitF, " - [Elderly] %s\n", tempName);
+    }
+
+    hh_infants[idx] = read_int_prompt("Number of infants (<=2): ");
+    for (int i = 0; i < hh_infants[idx]; i++) {
+        printf("  -> Name of Infant #%d: ", i + 1);
+        read_line(tempName, MAX_NAME);
+        fprintf(unfitF, " - [Infant] %s\n", tempName);
+    }
+
     hh_disabled[idx] = read_int_prompt("Number of persons with disability: ");
+    for (int i = 0; i < hh_disabled[idx]; i++) {
+        printf("  -> Name of PWD #%d: ", i + 1);
+        read_line(tempName, MAX_NAME);
+        fprintf(unfitF, " - [PWD] %s\n", tempName);
+    }
+
     hh_pregnant[idx] = read_int_prompt("Number of pregnant members: ");
-    hh_served[idx]   = 0;
-    hh_order[idx]    = ++global_counter;
-    hh_vuln[idx]     = compute_vulnerability_index(idx);
+    for (int i = 0; i < hh_pregnant[idx]; i++) {
+        printf("  -> Name of Pregnant Woman #%d: ", i + 1);
+        read_line(tempName, MAX_NAME);
+        fprintf(unfitF, " - [Pregnant] %s\n", tempName);
+    }
+
+    int vulnerable_count = hh_elderly[idx] + hh_infants[idx] + hh_disabled[idx] + hh_pregnant[idx];
+    int fit_count = hh_members[idx] - vulnerable_count;
+
+    if (fit_count < 0) {
+        printf("Warning: Vulnerable count exceeds total members. Setting fit people to 0.\n");
+        fit_count = 0;
+    }
+
+    if (fit_count > 0) {
+        printf("Remaining members (Fit): %d\n", fit_count);
+        for (int i = 0; i < fit_count; i++) {
+            printf("  -> Name of Fit Member #%d: ", i + 1);
+            read_line(tempName, MAX_NAME);
+            fprintf(unfitF, " - [Fit] %s\n", tempName);
+        }
+    }
+
+    fprintf(unfitF, "-----------------------------------\n");
+    fclose(unfitF);
+
+    hh_served[idx] = 0;
+    hh_order[idx] = ++global_counter;
+    hh_vuln[idx] = compute_vulnerability_index(idx);
+    
     heap_size++;
     heapify_up(heap_size - 1);
-    printf("Registered household ID %llu (Head: %s) with vulnerability %.2f\n",
-           (unsigned long long)hh_id[heap_size - 1],
-           hh_head[heap_size - 1],
-           hh_vuln[heap_size - 1]);
+    
+    printf("\nHousehold successfully registered and names saved to unfit_person.txt!\n");
 }
 
 void update_all_scores(void) {
@@ -563,7 +627,7 @@ void search_update_ui(void) {
            hh_disabled[idx], hh_pregnant[idx],
            hh_served[idx] ? "Yes" : "No");
 
-    printf("1) Update counts  2) Toggle served  3) Remove household  0) Cancel\n");
+    printf("1) Update counts  2) Toggle served  3) Remove household 4) Show More 0) Cancel\n");
     int choice = read_int_prompt("Choose action: ");
 
     if (choice == 1) {
@@ -600,7 +664,11 @@ void search_update_ui(void) {
             heapify_up(idx);
         }
         printf("Removed household ID %llu\n", id);
-    } else {
+    } 
+    else if(choice == 4){
+        system("unfit_person.txt");
+    }
+    else {
         printf("Cancelled.\n");
     }
 }
