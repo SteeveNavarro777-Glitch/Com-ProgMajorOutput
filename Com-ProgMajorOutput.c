@@ -572,6 +572,11 @@ void list_ui(void) {
         tmp_order[i]    = hh_order[i];
     }
 
+    /* Print header */
+    printf("\n%-4s | %-8s | %-15s | %-10s | %-8s | %-8s | %-8s | %-9s | %-9s | %-10s\n",
+           "RANK", "ID", "HEAD_NAME", "ZONE", "MEMBERS", "ELDERLY", "INFANTS", "DISABLED", "PREGNANT", "SERVED");
+    printf("======|==========|=================|============|==========|==========|==========|===========|===========|============\n");
+
     int rank = 1;
     while (tmp_size > 0) {
         /* Find index of highest priority */
@@ -580,14 +585,18 @@ void list_ui(void) {
             if (tmp_vuln[i] > tmp_vuln[best]) best = i;
             else if (tmp_vuln[i] == tmp_vuln[best] && tmp_order[i] < tmp_order[best]) best = i;
         }
-        printf("%d) ID:%llu | Head: %s | Zone: %s | Members:%d | Elderly:%d | Infants:%d | Disabled:%d | Pregnant:%d\n",
+        
+        printf("%-4d | %-8llu | %-15s | %-10s | %-8d | %-8d | %-8d | %-9d | %-9d | %-10s\n",
                rank,
                (unsigned long long)tmp_id[best],
-               tmp_head[best], tmp_zone[best],
-               tmp_members[best], tmp_elderly[best], tmp_infants[best],
-               tmp_disabled[best], tmp_pregnant[best]);
-        printf("    Vulnerability: %.2f | Served: %s\n",
-               tmp_vuln[best], tmp_served[best] ? "Yes" : "No");
+               tmp_head[best],
+               tmp_zone[best],
+               tmp_members[best],
+               tmp_elderly[best],
+               tmp_infants[best],
+               tmp_disabled[best],
+               tmp_pregnant[best],
+               tmp_served[best] ? "Yes" : "No");
 
         /* Remove best by shifting remaining entries left */
         for (j = best; j < tmp_size - 1; ++j) {
@@ -606,6 +615,7 @@ void list_ui(void) {
         tmp_size--;
         rank++;
     }
+    printf("\n");
 }
 
 int find_index_by_id(unsigned long long id) {
