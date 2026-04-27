@@ -1,12 +1,27 @@
-Household ID: 1007 (Head: Batista)
- - [Elderly] 1
- - [Infant] Hellpo
- - [Infant] asd
- - [Pregnant] 
+Household ID: 1001 
+Surname: Adi
+Zone/Purok: 5
+Household Size = 4
+
+Family members: 
+ Elderly  - Crisos Adi
+ Fit      - Wester Adi
+ Fit      - Rey Adi
+ Fit      - Jude Adi
+
+Vulnerability Rate: 4.00
 -----------------------------------
-Household ID: 1007 (Head: Ibarra)
- - [Elderly] Crisostomo Ibbara
- - [Infant] Christopher Ibarra
- - [Fit] Malcolm Ibarra
- - [Fit] Jessa Ibarra
+Household ID: 1002 
+Surname: Cruz
+Zone/Purok: 1
+Household Size = 5
+
+Family members: 
+ Elderly  - Fernando Cruz
+ Infant   - Ferdinand Cruz
+ Fit      - Crizel Cruz
+ Fit      - Maris Cruz
+ Fit      - Clark Cruz
+
+Vulnerability Rate: 7.30
 -----------------------------------
