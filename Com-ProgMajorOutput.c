@@ -292,9 +292,8 @@ void save_data(const char *filename) {
     FILE *f = fopen(filename, "w");
     if (!f) { printf("Failed to open file for saving.\n"); return; }
 
-    // Adjusted widths to fit ALL capitalized labels comfortably
     // ID (6) | HEAD_NAME (20) | ZONE (6) | MEMBERS (10) | ELDERLY (10) | INFANTS (10) | DISABLED (10) | PREGNANT (10) | SERVED (8) | ORDER (8)
-    fprintf(f, "%-6s |           %-30s        |    %-11s                  | %-10s | %-10s | %-10s | %-10s | %-10s | %-8s | %-8s\n",
+    fprintf(f, "%-6s | %-30s | %-11s | %-10s | %-10s | %-10s | %-10s | %-10s | %-8s | %-8s\n",
             "ID", "HEAD_NAME", "ZONE", "MEMBERS", "ELDERLY", "INFANTS", "DISABLED", "PREGNANT", "SERVED", "ORDER");
 
     for (int i = 0; i < heap_size; ++i) {
@@ -319,7 +318,7 @@ void load_data(const char *filename) {
     FILE *f = fopen(filename, "r");
     if (!f) { printf("No saved data found (%s).\n", filename); return; }
 
-    char line[512];
+    char line[512];     
     /* Skip header line */
     if (!fgets(line, sizeof(line), f)) { fclose(f); return; }
 

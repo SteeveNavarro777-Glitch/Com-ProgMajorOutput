@@ -1,12 +1,35 @@
-Household ID: 1007 (Head: Batista)
- - [Elderly] 1
- - [Infant] Hellpo
- - [Infant] asd
- - [Pregnant] 
+
+Household ID: 1001 (Head: Kenneth)
+ - [Elderly] matthew
+ - [Infant] mark
+ - [Infant] luke
+ - [Fit] james
+ - [Fit] andrew
 -----------------------------------
-Household ID: 1007 (Head: Ibarra)
- - [Elderly] Crisostomo Ibbara
- - [Infant] Christopher Ibarra
- - [Fit] Malcolm Ibarra
- - [Fit] Jessa Ibarra
+Household ID: 1002 (Head: steeve)
+ - [Elderly] atheo
+ - [Elderly] toff
+ - [Infant] jino
+ - [PWD] rinz
+ - [Fit] cloyins
+ - [Fit] vincent
+-----------------------------------
+Household ID: 1003 (Head: chizka)
+ - [Elderly] john
+ - [Infant] marky
+ - [Infant] ben
+ - [Pregnant] daisy
+ - [Fit] kale
+-----------------------------------
+Household ID: 1004 (Head: Louiefranz )
+ - [Elderly] Sam
+ - [Infant] stark
+ - [Infant] peter
+ - [PWD] jen
+ - [Fit] zane
+-----------------------------------
+Household ID: 1006 (Head: jay)
+ - [Elderly] hazel
+ - [Infant] bob
+ - [Fit] rex
 -----------------------------------
