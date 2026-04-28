@@ -1,35 +1,27 @@
+Household ID: 1001 
+Surname: Adi
+Zone/Purok: 5
+Household Size = 4
 
-Household ID: 1001 (Head: Kenneth)
- - [Elderly] matthew
- - [Infant] mark
- - [Infant] luke
- - [Fit] james
- - [Fit] andrew
+Family members: 
+ Elderly  - Crisos Adi
+ Fit      - Wester Adi
+ Fit      - Rey Adi
+ Fit      - Jude Adi
+
+Vulnerability Rate: 4.00
 -----------------------------------
-Household ID: 1002 (Head: steeve)
- - [Elderly] atheo
- - [Elderly] toff
- - [Infant] jino
- - [PWD] rinz
- - [Fit] cloyins
- - [Fit] vincent
------------------------------------
-Household ID: 1003 (Head: chizka)
- - [Elderly] john
- - [Infant] marky
- - [Infant] ben
- - [Pregnant] daisy
- - [Fit] kale
------------------------------------
-Household ID: 1004 (Head: Louiefranz )
- - [Elderly] Sam
- - [Infant] stark
- - [Infant] peter
- - [PWD] jen
- - [Fit] zane
------------------------------------
-Household ID: 1006 (Head: jay)
- - [Elderly] hazel
- - [Infant] bob
- - [Fit] rex
+Household ID: 1002 
+Surname: Cruz
+Zone/Purok: 1
+Household Size = 5
+
+Family members: 
+ Elderly  - Fernando Cruz
+ Infant   - Ferdinand Cruz
+ Fit      - Crizel Cruz
+ Fit      - Maris Cruz
+ Fit      - Clark Cruz
+
+Vulnerability Rate: 7.30
 -----------------------------------
