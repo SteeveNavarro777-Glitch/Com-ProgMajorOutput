@@ -6,7 +6,6 @@
 #define MAX_HH 1024
 #define MAX_NAME 100
 #define MAX_ZONE 50
-#define CSV_FILE "relief_data_array.txt"
 #define MAX_ACCOUNTS 15
 #define MAX_RESIDENTS 50                    // changeable, depending on the population
 #define MAX_LEN 100
@@ -79,14 +78,16 @@ int main(void) {
         hh_order[i]    = 0;
     }
 
-    load_data(CSV_FILE);
+    load_data("relief_data_array.txt");
     printf("=== Offline Barangay Disaster Relief System (array version) ===\n");
     printf("Register households, prioritize by vulnerability, allocate relief offline.\n");
 
     accountManager();
 
     while (1) {
-        printf("\nMenu:\n");
+        printf("\n");
+        printf("<=====|| MAIN MENU ||=====>\n");
+        printf("\n");
         printf("1. Register household\n");
         printf("2. Serve next household (allocate relief)\n");
         printf("3. Peek next household\n");
@@ -94,7 +95,8 @@ int main(void) {
         printf("5. Search / Update / Remove household by ID\n");
         printf("6. Show all households' information\n");
         printf("0. Exit\n");
-        printf("Choose an option: ");
+        printf("\n");
+        printf("<--- Choose an option: --->\n");
         int choice;
         scanf("%d", &choice);
         getchar();
@@ -120,7 +122,7 @@ int main(void) {
         }
         else if (choice == 0) {
             update_all_scores();
-            save_data(CSV_FILE);
+            save_data("relief_data_array.txt");
             system("relief_data_array.txt");
             printf("Exiting. Stay safe.\n");
             return 0;
@@ -514,10 +516,10 @@ void register_household_ui(void) {
     heapify_up(heap_size - 1);
     
     // NEW: Save to relief_data_array.txt immediately after registration
-    save_data(CSV_FILE);
+    save_data("relief_data_array.txt");
     
     printf("\nHousehold successfully registered!\n");
-    printf("Data synced to %s and unfit_person.txt\n", CSV_FILE);
+    printf("Data synced to relief_data_array.txt and unfit_person.txt\n");
 }
 
 void update_all_scores(void) {
@@ -548,34 +550,70 @@ unsigned long long heap_pop_top(void) {
 }
 
 void serve_next_ui(void) {
-    if (heap_size == 0) { printf("No households to serve.\n"); return; }
+    if (heap_size == 0) { 
+        printf("\n[X] No households to serve.\n\n"); 
+        return; 
+    }
     update_all_scores();
     if (hh_served[0]) {
         heap_pop_top();
-        printf("Top household already served; removed from queue.\n");
+        printf("\n[!] Top household already served; removed from queue.\n\n");
         return;
     }
-    printf("Next to serve: ID %llu | Head: %s | Zone: %s | Vulnerability: %.2f\n", (unsigned long long)hh_id[0], hh_head[0], hh_zone[0], hh_vuln[0]);
+    
+    printf("\n");
+    printf("+===========================================================================+\n");
+    printf("|                                                                           |\n");
+    printf("|   >>> NEXT HOUSEHOLD FOR RELIEF ALLOCATION <<<                            |\n");
+    printf("|                                                                           |\n");
+    printf("|  ID: %-68llu |\n", (unsigned long long)hh_id[0]);
+    printf("|  Head: %-66s |\n", hh_head[0]);
+    printf("|  Zone: %-66s |\n", hh_zone[0]);
+    printf("|  Vulnerability Score: %.2f / 100                                         |\n", hh_vuln[0]);
+    printf("|                                                                           |\n");
+    printf("|  Allocate relief pack to this household?                                  |\n");
+    printf("|  [1] YES  |  [0] NO                                                       |\n");
+    printf("|                                                                           |\n");
+    printf("+===========================================================================+\n");
+    printf("\n<--- Your choice: --->\n");
     int confirm;
-    // = read_int_prompt("Allocate relief pack to this household? (1=yes, 0=no): ");
-    printf("Allocate relief pack to this household? (1=yes, 0=no): ");
     scanf("%d", &confirm);
 
     if (confirm == 1) {
         hh_served[0] = 1;
         unsigned long long served_id = heap_pop_top();
-        printf("Allocated relief to ID %llu\n", served_id);
+        printf("\n");
+        printf("+=================================================+\n");
+        printf("|  [OK] RELIEF ALLOCATED SUCCESSFULLY             |\n");
+        printf("|  Household ID: %llu                             |\n", served_id);
+        printf("+=================================================+\n");
+        printf("\n");
     } else {
-        printf("Cancelled.\n");
+        printf("\n[X] Allocation cancelled.\n\n");
     }
+    update_all_scores();
+    save_data("relief_data_array.txt");
 }
 
 void peek_next_ui(void) {
-    if (heap_size == 0) { printf("No households registered.\n"); return; }
+    if (heap_size == 0) { 
+        printf("\n  [X] No households registered.\n\n"); 
+        return; 
+    }
     update_all_scores();
-    printf("Next to serve: ID %llu | Head: %s | Zone: %s | Vulnerability: %.2f | Served: %s\n",
-           (unsigned long long)hh_id[0], hh_head[0], hh_zone[0], hh_vuln[0],
-           hh_served[0] ? "Yes" : "No");
+    printf("\n");
+    printf("+===========================================================================+\n");
+    printf("|                                                                           |\n");
+    printf("|        >>> PREVIEW: NEXT HOUSEHOLD IN QUEUE <<<                           |\n");
+    printf("|                                                                           |\n");
+    printf("| ID: %-68llu  |\n", (unsigned long long)hh_id[0]);
+    printf("| Head of Household: %-55s|\n", hh_head[0]);
+    printf("| Zone/Purok: %-61s |\n", hh_zone[0]);
+    printf("| Vulnerability Score: %.2f / 100                                          |\n", hh_vuln[0]);
+    printf("| Status: %-65s |\n", hh_served[0] ? "SERVED" : "PENDING");
+    printf("|                                                                           |\n");
+    printf("+===========================================================================+\n");
+    printf("\n");
 }
 
 
@@ -583,7 +621,10 @@ void peek_next_ui(void) {
 
 void list_ui(void) {
     update_all_scores();
-    if (heap_size == 0) { printf("No households registered.\n"); return; }
+    if (heap_size == 0) { 
+        printf("\n[X] No households registered.\n\n"); 
+        return; 
+    }
 
     /* Non-destructive sort: copy all arrays into temporaries, then selection-find */
     int tmp_size = heap_size;
@@ -610,10 +651,12 @@ void list_ui(void) {
         tmp_order[i]    = hh_order[i];
     }
 
-    /* Print header */
-    printf("\n%-4s | %-8s | %-15s | %-10s | %-8s | %-8s | %-8s | %-9s | %-9s | %-10s\n",
-           "RANK", "ID", "HEAD_NAME", "ZONE", "MEMBERS", "ELDERLY", "INFANTS", "DISABLED", "PREGNANT", "SERVED");
-    printf("=====|==========|=================|============|==========|==========|==========|===========|===========|============\n");
+    printf("\n");
+    printf("ALL HOUSEHOLDS SORTED BY VULNERABILITY:\n");
+    printf("================================================================================================================================\n");
+    printf("%-4s | %-8s | %-16s | %-10s | %-8s | %-8s | %-8s | %-9s | %-9s | %-9s\n", 
+           "RANK", "ID", "HEAD NAME", "ZONE", "MEMBERS", "ELDERLY", "INFANTS", "DISABLED", "PREGNANT", "SERVED");
+    printf("================================================================================================================================\n");
 
     int rank = 1;
     while (tmp_size > 0) {
@@ -624,7 +667,7 @@ void list_ui(void) {
             else if (tmp_vuln[i] == tmp_vuln[best] && tmp_order[i] < tmp_order[best]) best = i;
         }
         
-        printf("%-4d | %-8llu | %-15s | %-10s | %-8d | %-8d | %-8d | %-9d | %-9d | %-10s\n",
+        printf("%-4d | %-8llu | %-16s | %-10s | %-8d | %-8d | %-8d | %-9d | %-9d | %-9s\n",
                rank,
                (unsigned long long)tmp_id[best],
                tmp_head[best],
@@ -634,7 +677,7 @@ void list_ui(void) {
                tmp_infants[best],
                tmp_disabled[best],
                tmp_pregnant[best],
-               tmp_served[best] ? "Yes" : "No");
+               tmp_served[best] ? "YES" : "NO");
 
         /* Remove best by shifting remaining entries left */
         for (j = best; j < tmp_size - 1; ++j) {
@@ -653,6 +696,7 @@ void list_ui(void) {
         tmp_size--;
         rank++;
     }
+    printf("================================================================================================================================\n");
     printf("\n");
 }
 

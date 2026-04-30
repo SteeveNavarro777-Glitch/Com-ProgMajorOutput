@@ -1,27 +1,61 @@
-Household ID: 1001 
-Surname: Adi
-Zone/Purok: 5
-Household Size = 4
-
-Family members: 
- Elderly  - Crisos Adi
- Fit      - Wester Adi
- Fit      - Rey Adi
- Fit      - Jude Adi
-
-Vulnerability Rate: 4.00
------------------------------------
-Household ID: 1002 
-Surname: Cruz
+Household ID: 1003 
+Surname: navarro
 Zone/Purok: 1
 Household Size = 5
 
 Family members: 
- Elderly  - Fernando Cruz
- Infant   - Ferdinand Cruz
- Fit      - Crizel Cruz
- Fit      - Maris Cruz
- Fit      - Clark Cruz
+ Elderly  - rey
+ Infant   - ram
+ Infant   - rom
+ PWD      - fein
+ Fit      - wert
 
-Vulnerability Rate: 7.30
+Vulnerability Rate: 11.60
+-----------------------------------
+Household ID: 1004 
+Surname: atheo
+Zone/Purok: 2
+Household Size = 3
+
+Family members: 
+ Elderly  - zale
+ Pregnant - morie
+ Fit      - jake
+
+Vulnerability Rate: 5.00
+-----------------------------------
+Household ID: 1005 
+Surname: terenz
+Zone/Purok: 3
+Household Size = 5
+
+Family members: 
+ Elderly  - yoke
+ Elderly  - pole
+ Infant   - rizz
+ PWD      - montis
+ Fit      - grake
+
+Vulnerability Rate: 11.80
+-----------------------------------
+Household ID: 1006 
+Surname: christian
+Zone/Purok: 6
+Household Size = 5
+
+Family members: 
+ Elderly  - ben
+ Elderly  - ken
+ Infant   - siel
+ PWD      - parmae
+ Fit      - 1
+
+Vulnerability Rate: 11.80
+-----------------------------------
+UPDATED Household ID: 1006 (Head: christian)
+ - [Elderly] ben
+ - [Elderly] ren
+ - [Infant] zig
+ - [PWD] perm
+ - [Fit] lace
 -----------------------------------
