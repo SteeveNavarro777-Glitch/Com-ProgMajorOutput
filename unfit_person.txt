@@ -1,61 +1,75 @@
-Household ID: 1003 
-Surname: navarro
+Household ID: 1001 
+Surname: santos
 Zone/Purok: 1
-Household Size = 5
+Household Size = 6
 
 Family members: 
- Elderly  - rey
- Infant   - ram
- Infant   - rom
- PWD      - fein
- Fit      - wert
+ Elderly  - justin
+ Elderly  - larry
+ Infant   - scott
+ Infant   - nicole
+ PWD      - eric
+ Fit      - Anna
 
-Vulnerability Rate: 11.60
+Vulnerability Rate: 14.10
+-----------------------------------
+Household ID: 1002 
+Surname: Reyes
+Zone/Purok: 5
+Household Size = 10
+
+Family members: 
+ Elderly  - timothy
+ Elderly  - ronald
+ Elderly  - edward
+ Infant   - sharon
+ Infant   - Amy
+ Pregnant - rebecca
+ Fit      - kevin
+ Fit      - brian
+ Fit      - joshua
+ Fit      - daniel
+
+Vulnerability Rate: 18.10
+-----------------------------------
+Household ID: 1003 
+Surname: Dela Cruz
+Zone/Purok: 4
+Household Size = 4
+
+Family members: 
+ Elderly  - paul
+ Infant   - carol
+ Fit      - christopher
+ Fit      - anthony
+
+Vulnerability Rate: 5.80
 -----------------------------------
 Household ID: 1004 
-Surname: atheo
-Zone/Purok: 2
-Household Size = 3
-
-Family members: 
- Elderly  - zale
- Pregnant - morie
- Fit      - jake
-
-Vulnerability Rate: 5.00
------------------------------------
-Household ID: 1005 
-Surname: terenz
+Surname: Jonathan
 Zone/Purok: 3
 Household Size = 5
 
 Family members: 
- Elderly  - yoke
- Elderly  - pole
- Infant   - rizz
- PWD      - montis
- Fit      - grake
+ Elderly  - brandon
+ Elderly  - gregory
+ PWD      - patrick
+ Fit      - olivia
+ Fit      - rachel
 
-Vulnerability Rate: 11.80
+Vulnerability Rate: 10.00
 -----------------------------------
-Household ID: 1006 
-Surname: christian
-Zone/Purok: 6
+Household ID: 1005 
+Surname: jose
+Zone/Purok: 2
 Household Size = 5
 
 Family members: 
- Elderly  - ben
- Elderly  - ken
- Infant   - siel
- PWD      - parmae
- Fit      - 1
+ Fit      - raymond
+ Fit      - janet
+ Fit      - diane
+ Fit      - lauren
+ Fit      - henry
 
-Vulnerability Rate: 11.80
------------------------------------
-UPDATED Household ID: 1006 (Head: christian)
- - [Elderly] ben
- - [Elderly] ren
- - [Infant] zig
- - [PWD] perm
- - [Fit] lace
+Vulnerability Rate: 3.50
 -----------------------------------
