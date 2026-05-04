@@ -73,3 +73,74 @@ Family members:
 
 Vulnerability Rate: 3.50
 -----------------------------------
+Household ID: 1006 
+Surname: nathan
+Zone/Purok: 6
+Household Size = 5
+
+Family members: 
+ Elderly  - adam
+ PWD      - ruth
+ PWD      - peter
+ Fit      - zachary
+ Fit      - douglas
+
+Vulnerability Rate: 10.50
+-----------------------------------
+Household ID: 1007 
+Surname: noah
+Zone/Purok: 7
+Household Size = 4
+
+Family members: 
+ Infant   - kyle
+ Infant   - ethan
+ Fit      - vitoria
+ Fit      - helen
+
+Vulnerability Rate: 5.60
+-----------------------------------
+Household ID: 1008 
+Surname: christian
+Zone/Purok: 8
+Household Size = 3
+
+Family members: 
+ Infant   - judith
+ Fit      - jeremy
+ Fit      - keith
+
+Vulnerability Rate: 3.30
+-----------------------------------
+Household ID: 1009 
+Surname: Austin
+Zone/Purok: 9
+Household Size = 5
+
+Family members: 
+ Elderly  - sarah
+ Infant   - walyer
+ Infant   - dylan
+ Fit      - sophia
+ Fit      - jesse
+
+Vulnerability Rate: 9.10
+-----------------------------------
+Household ID: 1010 
+Surname: Harold
+Zone/Purok: 10
+Household Size = 9
+
+Family members: 
+ Elderly  - janice
+ Elderly  - julia
+ Elderly  - natalie
+ Elderly  - jordan
+ Infant   - lawrence
+ Infant   - arthur
+ PWD      - Alice
+ Fit      - joe
+ Fit      - alan
+
+Vulnerability Rate: 20.60
+-----------------------------------
