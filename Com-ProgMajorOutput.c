@@ -137,7 +137,6 @@ int main(void) {
 
 // <=====|| FUNCTION DEFINITIONS ||=====>
 
-
 int my_strlen(const char *s) {
     int i = 0;
     while (s[i] != '\0') i++;
@@ -515,6 +514,8 @@ void register_household_ui(void) {
     heap_size++;
     heapify_up(heap_size - 1);
     
+    rebuild_heap();
+
     // NEW: Save to relief_data_array.txt immediately after registration
     save_data("relief_data_array.txt");
     
@@ -548,6 +549,9 @@ unsigned long long heap_pop_top(void) {
     }
     return topid;
 }
+
+
+// <=====|| OPTION #2 FUNCTION ||=====>
 
 void serve_next_ui(void) {
     if (heap_size == 0) { 
@@ -594,6 +598,9 @@ void serve_next_ui(void) {
     update_all_scores();
     save_data("relief_data_array.txt");
 }
+
+
+// <=====|| OPTION #3 FUNCTION ||=====>
 
 void peek_next_ui(void) {
     if (heap_size == 0) { 
