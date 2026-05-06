@@ -144,3 +144,17 @@ Family members:
 
 Vulnerability Rate: 20.60
 -----------------------------------
+Household ID: 1011 
+Surname: Marquez
+Zone/Purok: 3
+Household Size = 5
+
+Family members: 
+ Infant   - Grey
+ Pregnant - Maya
+ Fit      - Gabrielle
+ Fit      - Clark
+ Fit      - Michael
+
+Vulnerability Rate: 6.80
+-----------------------------------

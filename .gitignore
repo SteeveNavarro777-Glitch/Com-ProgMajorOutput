@@ -20,3 +20,7 @@ relief_data_array.txt
 # OS files
 .DS_Store
 Thumbs.db
+
+.tmp.driveupload/
+.sync/
+.cache/
