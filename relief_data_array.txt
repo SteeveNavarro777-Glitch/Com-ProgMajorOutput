@@ -1,0 +1,12 @@
+ID     |           HEAD_NAME                             |    ZONE                         | MEMBERS    | ELDERLY    | INFANTS    | DISABLED   | PREGNANT   | SERVED   | ORDER   
+1010   | Harold               | 10     | 9          | 4          | 2          | 1          | 0          | 0        | 0       
+1002   | Reyes                | 5      | 10         | 3          | 2          | 0          | 1          | 0        | 0       
+1006   | Nathan               | 6      | 5          | 1          | 0          | 2          | 0          | 0        | 0       
+1004   | Jonathan             | 3      | 5          | 2          | 0          | 1          | 0          | 0        | 0       
+1001   | Santos               | 1      | 6          | 2          | 2          | 0          | 0          | 0        | 0       
+1003   | Dela Cruz            | 4      | 4          | 1          | 1          | 0          | 0          | 0        | 0       
+1007   | Noah                 | 7      | 4          | 0          | 2          | 0          | 0          | 0        | 0       
+1008   | Christian            | 8      | 3          | 0          | 1          | 0          | 0          | 0        | 0       
+1009   | Austin               | 9      | 5          | 1          | 2          | 0          | 0          | 0        | 0       
+1005   | Jose                 | 2      | 5          | 0          | 0          | 0          | 0          | 0        | 0       
+1011   | Marquez              | 3      | 5          | 0          | 1          | 0          | 1          | 0        | 1       
