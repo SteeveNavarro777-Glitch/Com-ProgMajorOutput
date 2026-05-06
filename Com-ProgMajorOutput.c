@@ -53,6 +53,7 @@ unsigned long long heap_pop_top(void);
 void serve_next_ui(void);
 void peek_next_ui(void);
 void list_ui(void);
+void household_info(void);
 int find_index_by_id(unsigned long long id);
 void search_update_ui(void);
 void accountManager();
@@ -118,12 +119,13 @@ int main(void) {
             search_update_ui();
         }
         else if (choice == 6){
-            system("unfit_person.txt");
+            //system("household_info.txt");
+            household_info();
         }
         else if (choice == 0) {
             update_all_scores();
             save_data("relief_data_array.txt");
-            system("relief_data_array.txt");
+            //system("relief_data_array.txt");
             printf("Exiting. Stay safe.\n");
             return 0;
         }
@@ -443,44 +445,44 @@ void register_household_ui(void) {
     
     hh_members[idx] = read_int_prompt("Total household members: ");
 
-    // Open unfit_person.txt in Append mode
-    FILE *unfitF = fopen("unfit_person.txt", "a");
-    if (!unfitF) {
-        printf("Error: Could not open unfit_person.txt\n");
+    // Open household_info.txt in Append mode
+    FILE *hh_info = fopen("household_info.txt", "a");
+    if (!hh_info) {
+        printf("Error: Could not open household_info.txt\n");
         return;
     }
-    fprintf(unfitF, "Household ID: %llu \nSurname: %s\n", hh_id[idx], hh_head[idx]);
-    fprintf(unfitF, "Zone/Purok: %s\n", hh_zone[idx]);
-    fprintf(unfitF, "Household Size = %d\n\n", hh_members[idx]);
-    fprintf(unfitF, "Family members: \n");
+    fprintf(hh_info, "Household ID: %llu \nSurname: %s\n", hh_id[idx], hh_head[idx]);
+    fprintf(hh_info, "Zone/Purok: %s\n", hh_zone[idx]);
+    fprintf(hh_info, "Household Size = %d\n\n", hh_members[idx]);
+    fprintf(hh_info, "Family members: \n");
 
     // Data collection for vulnerable members
     hh_elderly[idx] = read_int_prompt("Number of elderly (60+): ");
     for (int i = 0; i < hh_elderly[idx]; i++) {
         printf("  -> Name of Elderly #%d: ", i + 1);
         read_line(tempName, MAX_NAME);
-        fprintf(unfitF, " Elderly  - %s\n", tempName);
+        fprintf(hh_info, " Elderly  - %s\n", tempName);
     }
 
     hh_infants[idx] = read_int_prompt("Number of infants (<=2): ");
     for (int i = 0; i < hh_infants[idx]; i++) {
         printf("  -> Name of Infant #%d: ", i + 1);
         read_line(tempName, MAX_NAME);
-        fprintf(unfitF, " Infant   - %s\n", tempName);
+        fprintf(hh_info, " Infant   - %s\n", tempName);
     }
 
     hh_disabled[idx] = read_int_prompt("Number of persons with disability: ");
     for (int i = 0; i < hh_disabled[idx]; i++) {
         printf("  -> Name of PWD #%d: ", i + 1);
         read_line(tempName, MAX_NAME);
-        fprintf(unfitF, " PWD      - %s\n", tempName);
+        fprintf(hh_info, " PWD      - %s\n", tempName);
     }
 
     hh_pregnant[idx] = read_int_prompt("Number of pregnant members: ");
     for (int i = 0; i < hh_pregnant[idx]; i++) {
         printf("  -> Name of Pregnant Woman #%d: ", i + 1);
         read_line(tempName, MAX_NAME);
-        fprintf(unfitF, " Pregnant - %s\n", tempName);
+        fprintf(hh_info, " Pregnant - %s\n", tempName);
     }
 
     int vulnerable_count = hh_elderly[idx] + hh_infants[idx] + hh_disabled[idx] + hh_pregnant[idx];
@@ -496,16 +498,16 @@ void register_household_ui(void) {
         for (int i = 0; i < fit_count; i++) {
             printf("  -> Name of Fit Member #%d: ", i + 1);
             read_line(tempName, MAX_NAME);
-            fprintf(unfitF, " Fit      - %s\n", tempName);
+            fprintf(hh_info, " Fit      - %s\n", tempName);
         }
     }
 
     hh_vuln[idx] = compute_vulnerability_index(idx);
 
-    fprintf(unfitF, "\nVulnerability Rate: %.2lf\n", hh_vuln[idx]);
+    fprintf(hh_info, "\nVulnerability Rate: %.2lf\n", hh_vuln[idx]);
 
-    fprintf(unfitF, "-----------------------------------\n");
-    fclose(unfitF); // Saved to unfit_person.txt
+    fprintf(hh_info, "-----------------------------------\n");
+    fclose(hh_info); // Saved to household_info.txt
 
     hh_served[idx] = 0;
     hh_order[idx] = ++global_counter;
@@ -520,7 +522,7 @@ void register_household_ui(void) {
     save_data("relief_data_array.txt");
     
     printf("\nHousehold successfully registered!\n");
-    printf("Data synced to relief_data_array.txt and unfit_person.txt\n");
+    printf("Data synced to relief_data_array.txt and household_info.txt\n");
 }
 
 void update_all_scores(void) {
@@ -707,6 +709,39 @@ void list_ui(void) {
     printf("\n");
 }
 
+// <=====|| OPTION #5 ||=====.
+
+void household_info(void) {
+    FILE *f = fopen("household_info.txt", "r");
+    char line[256]; // Buffer to hold each line of the text
+
+    if (f == NULL) {
+        printf("\n[!] Error: Could not open household_info.txt.\n");
+        printf("Ensure at least one household has been registered.\n");
+        return;
+    }
+
+    printf("\n==================================================\n");
+    printf("        HOUSEHOLD INFORMATION           \n");
+    printf("==================================================\n");
+
+    // Read the file until the end (EOF)
+    // everytime ang fgets naay makita nga char, mag return siyag true
+    // fgets copies until it reaches '\n' or end of the line
+    while (fgets(line, sizeof(line), f)) {
+        printf("%s", line);
+    }
+
+    printf("\n==================================================\n");
+    printf("             END OF HOUSEHOLD INFORMATION                  \n");
+    printf("==================================================\n");
+
+    fclose(f);
+    
+    printf("\nPress Enter to return to menu...");
+    getchar(); // Wait for user to read
+}
+
 int find_index_by_id(unsigned long long id) {
     int i;
     for (i = 0; i < heap_size; ++i)
@@ -764,13 +799,13 @@ void search_update_ui(void) {
         // 1. Get New Total first for calculations later
         hh_members[idx] = read_int_prompt("New Total Members: ");
 
-        FILE *unfitF = fopen("unfit_person.txt", "a");
-        if (!unfitF) {
+        FILE *hh_info = fopen("household_info.txt", "a");
+        if (!hh_info) {
             printf("Error: Could not open records file.\n");
             return;
         }
         
-        fprintf(unfitF, "UPDATED Household ID: %llu (Head: %s)\n", hh_id[idx], hh_head[idx]);
+        fprintf(hh_info, "UPDATED Household ID: %llu (Head: %s)\n", hh_id[idx], hh_head[idx]);
         char tempName[MAX_NAME];
 
         // 2. ELDERLY: Number -> Names
@@ -778,7 +813,7 @@ void search_update_ui(void) {
         for (int i = 0; i < hh_elderly[idx]; i++) {
             printf("  -> Name of New Elderly #%d: ", i + 1);
             read_line(tempName, MAX_NAME);
-            fprintf(unfitF, " - [Elderly] %s\n", tempName);
+            fprintf(hh_info, " - [Elderly] %s\n", tempName);
         }
 
         // 3. INFANTS: Number -> Names
@@ -786,7 +821,7 @@ void search_update_ui(void) {
         for (int i = 0; i < hh_infants[idx]; i++) {
             printf("  -> Name of New Infant #%d: ", i + 1);
             read_line(tempName, MAX_NAME);
-            fprintf(unfitF, " - [Infant] %s\n", tempName);
+            fprintf(hh_info, " - [Infant] %s\n", tempName);
         }
 
         // 4. PWD: Number -> Names
@@ -794,7 +829,7 @@ void search_update_ui(void) {
         for (int i = 0; i < hh_disabled[idx]; i++) {
             printf("  -> Name of New PWD #%d: ", i + 1);
             read_line(tempName, MAX_NAME);
-            fprintf(unfitF, " - [PWD] %s\n", tempName);
+            fprintf(hh_info, " - [PWD] %s\n", tempName);
         }
 
         // 5. PREGNANT: Number -> Names
@@ -802,7 +837,7 @@ void search_update_ui(void) {
         for (int i = 0; i < hh_pregnant[idx]; i++) {
             printf("  -> Name of New Pregnant #%d: ", i + 1);
             read_line(tempName, MAX_NAME);
-            fprintf(unfitF, " - [Pregnant] %s\n", tempName);
+            fprintf(hh_info, " - [Pregnant] %s\n", tempName);
         }
 
         // 6. FIT PEOPLE: Auto-calculate remaining
@@ -814,12 +849,12 @@ void search_update_ui(void) {
             for (int i = 0; i < fit_count; i++) {
                 printf("  -> Name of New Fit Member #%d: ", i + 1);
                 read_line(tempName, MAX_NAME);
-                fprintf(unfitF, " - [Fit] %s\n", tempName);
+                fprintf(hh_info, " - [Fit] %s\n", tempName);
             }
         }
 
-        fprintf(unfitF, "-----------------------------------\n");
-        fclose(unfitF);
+        fprintf(hh_info, "-----------------------------------\n");
+        fclose(hh_info);
 
         // Finalize state in RAM
         hh_vuln[idx] = compute_vulnerability_index(idx);
@@ -913,9 +948,9 @@ int find_index_by_name(const char *name) {
 // <=====|| SUB-OPTION #4 OF OPTION #5 ||=====>
 
 void display_detailed_names(unsigned long long target_id) {
-    FILE *f = fopen("unfit_person.txt", "r");
+    FILE *f = fopen("household_info.txt", "r");
     if (!f) {
-        printf("\n[!] No name records found (unfit_person.txt is empty).\n");
+        printf("\n[!] No name records found (household_info.txt is empty).\n");
         return;
     }
 
